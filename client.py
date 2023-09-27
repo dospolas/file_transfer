@@ -68,26 +68,37 @@ def download_file(socket):
 
     if response_parts[0] == b"READY_FOR_DOWNLOAD":
         file_name = response_parts[1].decode('utf-8')  # Nombre del archivo
-        sha256_list = response_parts[2].decode('utf-8')  # Diccionario con los SHA-256 parciales
+        parts_info = response_parts[2].decode('utf-8')  # Diccionario con los SHA-256 y servidores
 
-        # Convertir el lista de cadena a un lista Python
-        sha256_list = eval(sha256_list)
-        print(sha256_list)
+        # Convertir el diccionario de cadena a un diccionario Python
+        parts_info_dict = eval(parts_info)
 
         save_folder = "archivos_descargados/"
         os.makedirs(save_folder, exist_ok=True)
         file_path = os.path.join(save_folder, file_name)
 
         print(f"Descargando archivo '{file_name}' con SHA256: {complete_file_sha256}")
+
         with open(file_path, "wb") as file:
             part_number = 1
-            for part_sha256 in sha256_list:
-                socket.send_multipart([b"REQUEST_PART", part_sha256.encode('utf-8')])
-                part_data = socket.recv()
 
-                print(f"Recibiendo parte '{part_number}' del archivo...")
+            # Descargar cada parte del archivo desde el servidor correspondiente
+            for part_sha256, server_ip_port in parts_info_dict.items():
+                server_ip, server_port = server_ip_port.split(":")
+                server_address = f"tcp://{server_ip}:{server_port}"
+
+                context = zmq.Context()
+                socket_req = context.socket(zmq.REQ)
+                socket_req.connect(server_address)
+
+                socket_req.send_multipart([b"REQUEST_PART", part_sha256.encode('utf-8')])
+                part_data = socket_req.recv()
+
+                print(f"Recibiendo parte '{part_number}' del archivo desde {server_ip_port}...")
                 file.write(part_data)
                 part_number += 1
+
+                socket_req.close()
 
         print(f"El archivo '{file_name}' se ha guardado en '{file_path}'")
 
