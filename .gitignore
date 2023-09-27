@@ -1,0 +1,8 @@
+# Ignorar carpetas
+/archivos_descargados
+/storage
+
+# Ignorar todos los archivos excepto los archivos .py
+*
+!*.py
+!*.gitignore
