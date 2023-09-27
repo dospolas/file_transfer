@@ -45,6 +45,7 @@ def main():
             server_ip_port = message[1].decode('utf-8')
             if server_ip_port not in registered_servers:
                 registered_servers.append(server_ip_port)
+            print(f"Servidor Registrado -- {server_ip_port}")
             socket_rep.send_string("Server registered")
 
         elif message[0] == b"PART":
