@@ -28,6 +28,8 @@ def calculate_sha256(data):
 
 def get_storage_usage():
     total_size = 0
+    if not os.path.exists(save_folder):
+        os.makedirs(save_folder, exist_ok=True)
     for _, _, files in os.walk(save_folder):
         for file in files:
             file_path = os.path.join(save_folder, file)
