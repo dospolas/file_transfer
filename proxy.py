@@ -60,7 +60,7 @@ def main():
                 # Crea un socket REQ para comunicarse con el servidor
                 context = zmq.Context()
                 socket_req = context.socket(zmq.REQ)
-                socket_req.connect(f"tcp://{registered_servers[iterator]}")
+                socket_req.connect(f"{registered_servers[iterator]}")
 
                 # Envía la parte al servidor
                 socket_req.send_multipart([b"PART", part_sha256, part_data])
