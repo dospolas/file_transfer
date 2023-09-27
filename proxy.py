@@ -61,6 +61,7 @@ def main():
                 context = zmq.Context()
                 socket_req = context.socket(zmq.REQ)
                 socket_req.connect(f"{registered_servers[iterator]}")
+                server_ip_port = registered_servers[iterator]
 
                 # Envía la parte al servidor
                 socket_req.send_multipart([b"PART", part_sha256, part_data])
@@ -91,11 +92,11 @@ def main():
             socket_rep.send_string(f"PART {part_sha256.decode('utf-8')} received")
 
         elif message[0] == b"DOWNLOAD":
-            complete_file_sha256 = message[1].decode('utf-8')
+            complete_file_sha256 = message[1]
             
             if complete_file_sha256 in file_sha256_parts:
                 parts_info = file_sha256_parts[complete_file_sha256]
-                response = [b"READY_FOR_DOWNLOAD", complete_file_sha256.encode('utf-8'), str(parts_info).encode('utf-8')]
+                response = [b"READY_FOR_DOWNLOAD", file_paths[complete_file_sha256], str(parts_info).encode('utf-8')]
                 socket_rep.send_multipart(response)
             else:
                 socket_rep.send_string("FILE_NOT_FOUND")

@@ -84,8 +84,7 @@ def download_file(socket):
 
             # Descargar cada parte del archivo desde el servidor correspondiente
             for part_sha256, server_ip_port in parts_info_dict.items():
-                server_ip, server_port = server_ip_port.split(":")
-                server_address = f"tcp://{server_ip}:{server_port}"
+                server_address = f"{server_ip_port}"
 
                 context = zmq.Context()
                 socket_req = context.socket(zmq.REQ)
