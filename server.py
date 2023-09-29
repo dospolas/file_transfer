@@ -3,7 +3,7 @@ import hashlib
 import os
 
 sha256 = hashlib.sha256()
-STORAGE_SIZE = 1024 * 1024 * 1024  # Leemos en fragmentos de 1 GB
+STORAGE_SIZE = 1024 * 1024 * input("Ingrese la capacidad del servidor (MB): ")  # Tamaño de 
 # Solicitar la dirección IP y el puerto del servidor por consola
 server_ip = input("Ingrese la dirección IP del servidor (por ejemplo, 127.0.0.1): ")
 server_port = input("Ingrese el puerto del servidor (por ejemplo, 5555): ")
