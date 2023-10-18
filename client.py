@@ -43,7 +43,7 @@ def upload_file(socket):
 
             part_sha256 = hashlib.sha256(file_data).hexdigest()
             print(f"Enviando parte '{part_number}' del archivo '{file_path}' al proxy...")
-            socket.send_multipart([b"PART", part_sha256.encode('utf-8'), file_data])
+            socket.send_multipart([b"PART", part_sha256.encode('utf-8'), file_data, sha256_digest.encode('utf-8')])
             
             response = socket.recv_string()
             print("Respuesta del proxy:", response)

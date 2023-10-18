@@ -52,6 +52,7 @@ def main():
             # Recibimos una parte del archivo
             part_sha256 = message[1]
             part_data = message[2]
+            complete_file_sha256 = message[3]
 
             # Variable para rastrear si alguna parte se guardó con éxito
             part_saved = False
@@ -102,7 +103,7 @@ def main():
                 socket_rep.send_string("FILE_NOT_FOUND")
 
         elif message[0] == b"END":
-            # El cliente ha terminado de enviar partes
+            # El cliente ha terminado de enviar partess
             print(f"FILE {complete_file_sha256.decode('utf-8')} completed")
             socket_rep.send_string("END received")
 
