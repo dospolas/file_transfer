@@ -204,20 +204,22 @@ def responder_thread(socket_rep):
 
             if os.path.exists(file_path):
                 # Abre el archivo y divide en partes
-                with open(file_path, 'rb') as file:
+                try:
+                    with open(file_path, 'rb') as file:
+                        part_data = b""
+                        offset = (part_number-1) * BUF_SIZE
+                        file.seek(offset)
+                        part_data = file.read(BUF_SIZE)
+                except:
                     part_data = b""
-                    offset = (part_number-1) * BUF_SIZE
-                    file.seek(offset)
-                    part_data = file.read(BUF_SIZE)
 
                 # Envía la parte específica
                 if part_data == b'' :
                     socket_rep.send(b"FILE_NOT_FOUND")
                     # Elimina la parte inexistente del diccionario
                     del saved_parts[part_sha256]
-                    break
-
-                socket_rep.send(part_data)
+                else: 
+                    socket_rep.send(part_data)
             else:
                 # La parte solicitada no existe en el servidor
                 socket_rep.send(b"FILE_NOT_FOUND")
