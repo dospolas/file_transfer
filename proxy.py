@@ -84,7 +84,7 @@ def main():
                     if complete_file_sha256:
                         if complete_file_sha256 not in file_sha256_parts:
                             file_sha256_parts[complete_file_sha256] = {}
-                        file_sha256_parts[complete_file_sha256][part_sha256.decode('utf-8')] = server_ip_port #IP y puerto del server donde se guardo
+                        file_sha256_parts[complete_file_sha256][part_sha256.decode('utf-8')] = [server_ip_port] #IP y puerto del server donde se guardo
 
                     break
 
@@ -101,6 +101,23 @@ def main():
                 socket_rep.send_multipart(response)
             else:
                 socket_rep.send_string("FILE_NOT_FOUND")
+
+        elif message[0] == b"REQUEST_PART":
+            print(file_sha256_parts)
+            complete_file_sha256 = message[2]
+            part_sha256 = message[1].decode()
+
+            print(type(complete_file_sha256))
+            print(type(complete_file_sha256))
+            
+            if complete_file_sha256 in file_sha256_parts:
+                part_info = file_sha256_parts[complete_file_sha256][part_sha256]
+                response = [b"PART_LIST", str( part_info).encode('utf-8')]
+                socket_rep.send_multipart(response)
+            else:
+                socket_rep.send_string("FILE_NOT_FOUND")
+        
+        # elif update listas
 
         elif message[0] == b"END":
             # El cliente ha terminado de enviar partess
