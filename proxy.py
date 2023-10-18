@@ -1,6 +1,7 @@
 import zmq
 import hashlib
 import os
+from ast import literal_eval
 
 sha256 = hashlib.sha256()
 
@@ -105,7 +106,7 @@ def main():
         elif message[0] == b"REQUEST_PART":
             print(file_sha256_parts)
             complete_file_sha256 = message[2]
-            part_sha256 = message[1].decode()
+            part_sha256 = message[1].decode('utf-8')
 
             print(type(complete_file_sha256))
             print(type(complete_file_sha256))
@@ -123,6 +124,18 @@ def main():
             # El cliente ha terminado de enviar partess
             print(f"FILE {complete_file_sha256.decode('utf-8')} completed")
             socket_rep.send_string("END received")
+        
+        elif message[0] == b"UPDATE":
+            complete_file_sha256 = message[3]
+            part_sha256 = message[2].decode('utf-8')
+            if message[1] == b"DEL":
+                address = message[4].decode('utf-8')
+                file_sha256_parts[complete_file_sha256][part_sha256].remove(address)
+            if message[1] == b"ADD":
+                address = message[4].decode('utf-8')
+                file_sha256_parts[complete_file_sha256][part_sha256].append(address)
+            print(f"UPDATING... ")
+            socket_rep.send_string("OK")
 
 if __name__ == "__main__":
     main()
