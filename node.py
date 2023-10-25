@@ -83,8 +83,9 @@ def upload_file(socket):
     print("Calculando SHA256 del archivo...")
     sha256_digest = calculate_sha256(file_path)
     print("SHA256 calculado: {0}".format(sha256_digest))
+    file_name = os.path.basename(file_path)
 
-    socket.send_multipart([b"SHA256", file_path.encode('utf-8'), sha256_digest.encode('utf-8')])
+    socket.send_multipart([b"SHA256", file_name.encode('utf-8'), sha256_digest.encode('utf-8')])
     response = socket.recv_string()
     print("Respuesta del proxy:", response)
 
@@ -168,7 +169,8 @@ def download_file(socket):
                             socket.send_multipart([b"UPDATE", b"DEL", part_sha256.encode('utf-8'), complete_file_sha256.encode('utf-8'), address_selected.encode('utf-8')])
                             socket.recv()
                         else:
-                            address_list.append(address_selected)
+                            if address_selected not in address_list:
+                                address_list.append(address_selected)
                             # registrar en varibale de partes guardadas
                             saved_parts[part_sha256] = {}
                             saved_parts[part_sha256]["part"] = part_number
